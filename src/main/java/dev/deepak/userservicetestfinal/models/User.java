@@ -2,6 +2,8 @@ package dev.deepak.userservicetestfinal.models;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToMany;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
