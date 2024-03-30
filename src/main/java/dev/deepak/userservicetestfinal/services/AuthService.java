@@ -1,11 +1,14 @@
 package dev.deepak.userservicetestfinal.services;
 
 import dev.deepak.userservicetestfinal.dtos.UserDto;
+import dev.deepak.userservicetestfinal.models.Role;
 import dev.deepak.userservicetestfinal.models.SessionStatus;
 import dev.deepak.userservicetestfinal.models.User;
 import dev.deepak.userservicetestfinal.models.Session;
 import dev.deepak.userservicetestfinal.repositories.SessionRepository;
 import dev.deepak.userservicetestfinal.repositories.UserRepository;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.MacAlgorithm;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -79,7 +82,7 @@ public class AuthService {
         session.setSessionStatus(SessionStatus.ACTIVE);
         session.setToken(jws);
         session.setUser(user);
-        //session.setExpiringAt(new Date());
+        session.setExpiringAt(DateUtils.addDays(new Date(),30));
         sessionRepository.save(session);
 
         UserDto userDto = new UserDto();
@@ -135,6 +138,18 @@ public class AuthService {
         if (sessionOptional.isEmpty()) {
             return null;
         }
+        Session session=sessionOptional.get();
+        if(!session.getSessionStatus().equals(SessionStatus.ACTIVE)){
+            return SessionStatus.ENDED;
+        }
+        Date currentTime=new Date();
+        if(session.getExpiringAt().before(currentTime)){
+            return SessionStatus.ENDED;
+        }
+        Jws<Claims> claimsJws=Jwts.parser().build().parseSignedClaims(token);
+        String email=(String)claimsJws.getPayload().get("email");
+        List<Role> roles=(List<Role>) claimsJws.getPayload().get("roles");
+        Date createdAt=(Date) claimsJws.getPayload().get("createdAt");
 
         return SessionStatus.ACTIVE;
     }
