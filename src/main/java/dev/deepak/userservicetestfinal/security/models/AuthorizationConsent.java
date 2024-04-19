@@ -1,9 +1,12 @@
 package dev.deepak.userservicetestfinal.security.models;
-
 import java.io.Serializable;
 import java.util.Objects;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "`authorizationConsent`")
@@ -14,7 +17,6 @@ public class AuthorizationConsent {
     @Id
     private String principalName;
     @Column(length = 1000)
-    @Lob
     private String authorities;
 
     public String getRegisteredClientId() {
